@@ -23,7 +23,13 @@ Welcome to my Milestone-2 repository at Campus 42 Barcelona! This repository con
 
 Feel free to reach out to me through:
 
-- **GitHub:** [mks1313](https://github.com/mks1313)
-- **Email:** [your.email@example.com](mailto:your.email@example.com)
+<div style="display: flex; align-items: center; justify-content: center;">
+ <a href="mailto:mg.marinov@gmx.es" style="margin: 0 20px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg" width="40" alt="Email">
+  </a> <a href="https://www.linkedin.com/in/mgmarinov/" style="margin: 0 20px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="40" alt="LinkedIn">
+  </a> <a href="https://www.mgmarinov.com/portfolio" style="margin: 0 20px;">
+    <img src="https://res.cloudinary.com/dnwyfbj7m/image/upload/v1724882231/portfolio.png" width="40" alt="Portfolio"> </a>
+</div>
 
 Thank you for visiting my Milestone-2 repository and following my progress in programming!
