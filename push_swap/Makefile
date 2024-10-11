@@ -6,20 +6,20 @@
 #    By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/11 14:37:50 by mmarinov          #+#    #+#              #
-#    Updated: 2024/09/13 16:38:10 by mmarinov         ###   ########.fr        #
+#    Updated: 2024/10/11 12:58:54 by mmarinov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = push_swap
-CC = cc
+CC = cc -g
 CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address
 SRC = ...(archivos a compilar...)
 
 OBJ = $(SRC:.c=.o)
-LIBFT_DIR = libft
+LIBFT_DIR = ../libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-INCLUDE = libft/libft.h push_swap.h
+INCLUDE = ../libft/libft.h push_swap.h
 
 
 all: $(NAME)
@@ -30,7 +30,7 @@ $(NAME): $(OBJ) $(LIBFT)
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
 
-%.o: %.c $(INCLUDE)
+%.o: %.c $(INCLUDE) Makefile
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
@@ -38,7 +38,7 @@ clean:
 	rm -f $(OBJ)
 
 fclean: clean
-	$(MAKE) _C $(LIBFT_DIR) fclean
+	$(MAKE) -C $(LIBFT_DIR) fclean
 	rm -f $(NAME)
 
 re: fclean all
