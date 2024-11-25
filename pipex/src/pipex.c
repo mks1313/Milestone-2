@@ -5,96 +5,93 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/13 14:57:46 by mmarinov          #+#    #+#             */
-/*   Updated: 2024/11/15 15:28:28 by mmarinov         ###   ########.fr       */
+/*   Created: 2024/11/20 18:07:07 by mmarinov          #+#    #+#             */
+/*   Updated: 2024/11/25 15:57:00 by mmarinov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int main(int argc, char **argv)
+static void	execute_cmd(char *cmd, char **env)
 {
-	if (argc != 5)  // Verifica si la cantidad de argumentos es correcta
+	char	**cmd_args;
+	char	*cmd_path;
+
+	cmd_args = ft_split(cmd, ' ');
+	cmd_path = extract_path(cmd_args[0], env);
+	if (!cmd_path)
 	{
-		ft_putstr_fd("Usage: ./pipex file1 cmd1 cmd2 file2\n", 2);
-		return (1);
+		handle_error("Command not found");
 	}
-
-	int fd1 = open(argv[1], O_RDONLY);  // Abre el primer archivo para lectura
-	if (fd1 < 0)
+	if (!cmd_args)
 	{
-		ft_putstr_fd("Error opening file1\n", 2);
-		return (1);
+		handle_error("Command split failed");
 	}
-
-	int fd2 = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);  // Abre el segundo archivo para escritura
-	if (fd2 < 0)
+	if (execve(cmd_path, cmd_args, env) == -1)
 	{
-		ft_putstr_fd("Error opening file2\n", 2);
-		close(fd1);
-		return (1);
+		free_array(cmd_args);
+		free(cmd_path);
+		handle_error("Execve failed");
 	}
+	free_array(cmd_args);
+	free(cmd_path);
+}
 
-	int pipefd[2];  // Pipe para la comunicación entre los dos procesos
-	if (pipe(pipefd) == -1)  // Crea el pipe
+static void	handle_child_process(int *pipe_end, char **argv, char **env)
+{
+	int	fd_in;
+
+	fd_in = open(argv[1], O_RDONLY);
+	if (fd_in == -1)
+		handle_error("Error opening infile");
+	dup2(fd_in, STDIN_FILENO);
+	dup2(pipe_end[1], STDOUT_FILENO);
+	close(pipe_end[0]);
+	execute_cmd(argv[2], env);
+}
+
+static void	handle_parent_process(int *pipe_end, char **argv, char **env)
+{
+	int	fd_out;
+
+	fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd_out == -1)
+		handle_error("Error opening outfile");
+	dup2(pipe_end[0], STDIN_FILENO);
+	dup2(fd_out, STDOUT_FILENO);
+	close(pipe_end[1]);
+	execute_cmd(argv[3], env);
+}
+
+static void	create_process(int *pipe_end, char **argv, char **env, int is_child)
+{
+	pid_t	child_pid;
+
+	child_pid = fork();
+	if (child_pid == -1)
+		handle_error("Fork failed");
+	if (child_pid == 0)
 	{
-		ft_putstr_fd("Pipe failed\n", 2);
-		close(fd1);
-		close(fd2);
-		return (1);
+		if (is_child)
+			handle_child_process(pipe_end, argv, env);
+		else
+			handle_parent_process(pipe_end, argv, env);
 	}
+}
 
-	pid_t pid = fork();  // Crea un proceso hijo
-	if (pid == -1)
-	{
-		ft_putstr_fd("Fork failed\n", 2);
-		close(fd1);
-		close(fd2);
-		close(pipefd[0]);
-		close(pipefd[1]);
-		return (1);
-	}
+int	main(int argc, char **argv, char **env)
+{
+	int	pipe_end[2];
 
-	if (pid == 0)  // Proceso hijo
-	{
-		// Redirige la entrada (stdin) al archivo fd1
-		dup2(fd1, 0);
-		close(fd1);
-
-		// Redirige la salida (stdout) al pipe
-		dup2(pipefd[1], 1);
-		close(pipefd[0]);
-		close(pipefd[1]);
-
-		// Ejecuta el primer comando
-		char *cmd1[] = {argv[2], NULL};  // Comando 1
-		if (execvp(cmd1[0], cmd1) == -1)
-		{
-			ft_putstr_fd("Command 1 execution failed\n", 2);
-			return (1);
-		}
-	}
-	else  // Proceso padre
-	{
-		// Redirige la entrada (stdin) al pipe
-		dup2(pipefd[0], 0);
-		close(pipefd[1]);
-
-		// Redirige la salida (stdout) al archivo fd2
-		dup2(fd2, 1);
-		close(fd1);
-		close(fd2);
-
-		// Ejecuta el segundo comando
-		char *cmd2[] = {argv[3], NULL};  // Comando 2
-		if (execvp(cmd2[0], cmd2) == -1)
-		{
-			ft_putstr_fd("Command 2 execution failed\n", 2);
-			return (1);
-		}
-	}
-
-	close(pipefd[0]);
-	close(pipefd[1]);
+	if (argc != 5)
+		handle_error("Invalid number of arguments");
+	if (pipe(pipe_end) == -1)
+		handle_error("Pipe creation failed");
+	create_process(pipe_end, argv, env, 1);
+	create_process(pipe_end, argv, env, 0);
+	close(pipe_end[0]);
+	close(pipe_end[1]);
+	waitpid(-1, NULL, 0);
+	waitpid(-1, NULL, 0);
 	return (0);
 }
