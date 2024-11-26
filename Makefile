@@ -7,10 +7,14 @@
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/17 19:02:48 by mmarinov          #+#    #+#              #
 <<<<<<< HEAD
+<<<<<<< HEAD
 #    Updated: 2024/11/17 19:58:25 by mmarinov         ###   ########.fr        #
 =======
 #    Updated: 2024/11/17 19:32:34 by mmarinov         ###   ########.fr        #
 >>>>>>> 568f535 (pipex)
+=======
+#    Updated: 2024/11/17 20:14:10 by mmarinov         ###   ########.fr        #
+>>>>>>> e80a5f466b66df13ce94b9b6beb98de2d8bb6529
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +35,10 @@ RED         = \033[0;91m
 GREEN_DARK = \033[0;32m    # Verde oscuro
 WHITE = \033[0m            # Blanco
 RED = \033[0;91m           # Rojo
+<<<<<<< HEAD
 RESET = \033[0m            # Reiniciar color
+=======
+>>>>>>> e80a5f466b66df13ce94b9b6beb98de2d8bb6529
 
 
 
