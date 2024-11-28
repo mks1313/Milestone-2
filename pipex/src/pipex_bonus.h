@@ -6,7 +6,7 @@
 /*   By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 13:05:01 by mmarinov          #+#    #+#             */
-/*   Updated: 2024/11/26 17:06:32 by mmarinov         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:27:19 by mmarinov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,10 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 
-void	bonus_child_process(int *pipe_end, char **argv, char **env);
-void	bonus_parent_process(int *pipe, char **argv, char **env);
 void	bonus_handle_error(const char *msg);
 void	bonus_free_array(char **arr);
-void	bonus_execute_cmd(char *cmd, char **env);
-void	handle_here_doc(char *delimiter, char **argv, char **env);
+char	*bonus_extract_path(char *cmd, char **env);
+int		bonus_open_file(char *file, int flag);
+void	bonus_handle_exit(void);
 
 #endif

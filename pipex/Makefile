@@ -6,7 +6,7 @@
 #    By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/17 19:02:48 by mmarinov          #+#    #+#              #
-#    Updated: 2024/11/26 17:15:05 by mmarinov         ###   ########.fr        #
+#    Updated: 2024/11/28 17:41:58 by mmarinov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ GREEN_DARK  = \033[0;32m
 NAME = pipex
 BONUS_NAME = pipex_bonus
 CC = cc -g
-CFLAGS = -Wall -Wextra -Werror -MMD  # -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -MMD   -g -fsanitize=address
 SRC_DIR = ./src
 OBJ_DIR = ./obj
 LIBFT_DIR = ./libft
@@ -51,11 +51,15 @@ BONUS_OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(BONUS_SRC))
 DEP = $(OBJ:.o=.d)
 
 # Inclusión de archivos de dependencia
-# -include $(DEP)
+ -include $(DEP)
+ -include $(BONUS_DEP)
 
 INCLUDE = $(LIBFT_DIR)/libft.h \
-		  $(SRC_DIR)/pipex.h \
-		  $(SRC_DIR)/pipex_bonus.h
+		  $(SRC_DIR)/pipex.h
+
+
+ INCLUDE_BONUS = $(LIBFT_DIR)/libft.h \
+				$(SRC_DIR)/pipex_bonus.h
 # ---------------------------------------------------------------------------- #
 #                             Reglas de compilación                            #
 # ---------------------------------------------------------------------------- #
@@ -84,7 +88,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDE) Makefile
 	@echo "$(MAGENTA)Compiled: $<$(END)"
 
 # Regla para crear los archivos objeto del bonus
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDE) Makefile
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDE_BONUS) Makefile
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "$(MAGENTA)Compiled bonus: $<$(END)"
