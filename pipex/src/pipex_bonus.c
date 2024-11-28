@@ -6,110 +6,121 @@
 /*   By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 13:04:52 by mmarinov          #+#    #+#             */
-/*   Updated: 2024/11/26 18:18:32 by mmarinov         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:38:51 by mmarinov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-static char	*bonus_create_full_path(char *dir, char *cmd)
+static void	bonus_execute_cmd(char *cmd, char **env)
 {
-	char	*path;
-	char	*full_path;
+	char	**array_cmd;
+	char	*path_env;
 
-	path = ft_strjoin(dir, "/");
-	full_path = ft_strjoin(path, cmd);
-	free(path);
-	return (full_path);
+	array_cmd = ft_split(cmd, ' ');
+	path_env = bonus_extract_path(array_cmd[0], env);
+	if (!path_env)
+	{
+		bonus_free_array(array_cmd);
+		bonus_handle_error("Error: comando no encontrado o ruta inválida.");
+	}
+	if (execve(path_env, array_cmd, env) == -1)
+	{
+		bonus_free_array(array_cmd);
+		free(path_env);
+		bonus_handle_error("Error: fallo al ejecutar el comando.");
+	}
+	bonus_free_array(array_cmd);
+	free(path_env);
 }
 
-static char	*bonus_extract_path(char *cmd, char **env)
+static void	write_in_pipe(char **av, int *p_end)
 {
-	int		i;
-	char	**paths;
-	char	*full_path;
+	char	*line;
 
-	i = 0;
-	while (env[i] && ft_strnstr(env[i], "PATH", 4) == NULL)
-		i++;
-	if (!env[i])
-		return (NULL);
-	paths = ft_split(env[i] + 5, ':');
-	i = 0;
-	while (paths[i])
+	close(p_end[0]);
+	while (1)
 	{
-		full_path = bonus_create_full_path(paths[i], cmd);
-		if (access(full_path, F_OK | X_OK) == 0)
+		line = get_next_line(STDIN_FILENO);
+		if (ft_strncmp(line, av[2], ft_strlen(av[2])) == 0)
 		{
-			bonus_free_array(paths);
-			return (full_path);
+			free(line);
+			exit(0);
 		}
-		free(full_path);
-		i++;
-	}
-	bonus_free_array(paths);
-	return (NULL);
-}
-
-void	bonus_execute_cmd(char *cmd, char **env)
-{
-	char	**cmd_args;
-	char	*cmd_path;
-
-	cmd_args = ft_split(cmd, ' ');
-	cmd_path = bonus_extract_path(cmd_args[0], env);
-	if (!cmd_path)
-	{
-		bonus_handle_error("Command not found");
-	}
-	if (!cmd_args)
-	{
-		bonus_handle_error("Command split failed");
-	}
-	if (execve(cmd_path, cmd_args, env) == -1)
-	{
-		bonus_free_array(cmd_args);
-		free(cmd_path);
-		bonus_handle_error("Execve failed");
-	}
-	bonus_free_array(cmd_args);
-	free(cmd_path);
-}
-
-static void	create_process(int *pipe_end, char **argv, char **env, int is_child)
-{
-	pid_t	child_pid;
-
-	child_pid = fork();
-	if (child_pid == -1)
-		bonus_handle_error("Fork failed");
-	if (child_pid == 0)
-	{
-		if (is_child)
-			bonus_child_process(pipe_end, argv, env);
-		else
-			bonus_parent_process(pipe_end, argv, env);
+		ft_putstr_fd(line, p_end[1]);
+		free(line);
 	}
 }
 
-int	main(int argc, char **argv, char **env)
+static void	handle_heredoc(char **av)
 {
-	int	pipe_end[2];
+	int		p_end[2];
+	pid_t	np;
 
-	if (argc < 5)
-		bonus_handle_error("Invalid number of arguments");
-	if (argc == 6 && ft_strncmp(argv[1], "here_doc", 8) == 0)
+	if (pipe(p_end) == -1)
+		bonus_handle_error("Error: fallo al crear el pipe.");
+	np = fork();
+	if (np == -1)
+		bonus_handle_error("Error: fallo al hacer fork.");
+	if (!np)
+		write_in_pipe(av, p_end);
+	else
 	{
-		handle_here_doc(argv[2], argv, env);
-		return (0);
+		close(p_end[1]);
+		dup2(p_end[0], STDIN_FILENO);
+		waitpid(np, NULL, 0);
 	}
-	if (pipe(pipe_end) == -1)
-		bonus_handle_error("Pipe creation failed");
-	create_process(pipe_end, argv, env, 1);
-	create_process(pipe_end, argv, env, 0);
-	close(pipe_end[0]);
-	close(pipe_end[1]);
-	waitpid(-1, NULL, 0);
-	waitpid(-1, NULL, 0);
-	return (0);
+}
+
+static void	exe_pipeline(char *cmd, char **env)
+{
+	int		p_end[2];
+	pid_t	np;
+
+	if (pipe(p_end) == -1)
+		bonus_handle_error("Error: fallo al crear el pipe.");
+	np = fork();
+	if (np == -1)
+		bonus_handle_error("Error: fallo al hacer fork.");
+	if (!np)
+	{
+		close(p_end[0]);
+		dup2(p_end[1], STDOUT_FILENO);
+		bonus_execute_cmd(cmd, env);
+	}
+	else
+	{
+		close(p_end[1]);
+		dup2(p_end[0], STDIN_FILENO);
+		waitpid(np, NULL, 0);
+	}
+}
+
+int	main(int ac, char **av, char **env)
+{
+	int	i;
+	int	fdin;
+	int	fdout;
+
+	if (ac < 5)
+		bonus_handle_error("Error: número incorrecto de argumentos.");
+	if (ft_strncmp(av[1], "here_doc", 8) == 0)
+	{
+		if (ac < 6)
+			bonus_handle_error("Error: número incorrecto de argumentos.");
+		fdout = bonus_open_file(av[ac - 1], 2);
+		handle_heredoc(av);
+		i = 3;
+	}
+	else
+	{
+		fdin = bonus_open_file(av[1], 0);
+		fdout = bonus_open_file(av[ac - 1], 1);
+		dup2(fdin, STDIN_FILENO);
+		i = 2;
+	}
+	while (i < ac - 2)
+		exe_pipeline(av[i++], env);
+	dup2(fdout, STDOUT_FILENO);
+	bonus_execute_cmd(av[ac - 2], env);
 }
