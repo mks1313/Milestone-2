@@ -6,7 +6,7 @@
 /*   By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 13:05:34 by mmarinov          #+#    #+#             */
-/*   Updated: 2024/11/28 16:27:08 by mmarinov         ###   ########.fr       */
+/*   Updated: 2024/11/29 12:09:13 by mmarinov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ int	bonus_open_file(char *file, int flag)
 	if (flag == 0)
 		fd = open(file, O_RDONLY);
 	if (flag == 1)
-		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (flag == 2)
-		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0777);
+		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		bonus_handle_error("Error, mejorar");
 	return (fd);
