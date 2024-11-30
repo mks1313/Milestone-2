@@ -18,13 +18,14 @@ static void	execute_cmd(char *cmd, char **env)
 	char	*cmd_path;
 
 	cmd_args = ft_split(cmd, ' ');
-	if (!cmd_args)
-		handle_error("Command split failed");
 	cmd_path = extract_path(cmd_args[0], env);
 	if (!cmd_path)
 	{
-		free_array(cmd_args);
 		handle_error("Command not found");
+	}
+	if (!cmd_args)
+	{
+		handle_error("Command split failed");
 	}
 	if (execve(cmd_path, cmd_args, env) == -1)
 	{
@@ -46,9 +47,7 @@ static void	handle_child_process(int *pipe_end, char **argv, char **env)
 	dup2(fd_in, STDIN_FILENO);
 	dup2(pipe_end[1], STDOUT_FILENO);
 	close(pipe_end[0]);
-	close(pipe_end[1]);
 	execute_cmd(argv[2], env);
-	close(fd_in);
 }
 
 static void	handle_parent_process(int *pipe_end, char **argv, char **env)
@@ -61,31 +60,38 @@ static void	handle_parent_process(int *pipe_end, char **argv, char **env)
 	dup2(pipe_end[0], STDIN_FILENO);
 	dup2(fd_out, STDOUT_FILENO);
 	close(pipe_end[1]);
-	close(pipe_end[0]);
 	execute_cmd(argv[3], env);
-	close(fd_out);
 }
 
-int	main(int argc, char **argv, char **env)
+static void	create_process(int *pipe_end, char **argv, char **env, int is_child)
 {
-	int		pipe_end[2];
 	pid_t	child_pid;
 
-	if (argc != 5)
-		handle_error("Invalid number of arguments");
-	if (pipe(pipe_end) == -1)
-		handle_error("Pipe creation failed");
 	child_pid = fork();
 	if (child_pid == -1)
 		handle_error("Fork failed");
 	if (child_pid == 0)
 	{
-		handle_child_process(pipe_end, argv, env);
+		if (is_child)
+			handle_child_process(pipe_end, argv, env);
+		else
+			handle_parent_process(pipe_end, argv, env);
 	}
-	else
-	{
-		waitpid(child_pid, NULL, 0);
-		handle_parent_process(pipe_end, argv, env);
-	}
+}
+
+int	main(int argc, char **argv, char **env)
+{
+	int	pipe_end[2];
+
+	if (argc != 5)
+		handle_error("Invalid number of arguments");
+	if (pipe(pipe_end) == -1)
+		handle_error("Pipe creation failed");
+	create_process(pipe_end, argv, env, 1);
+	create_process(pipe_end, argv, env, 0);
+	close(pipe_end[0]);
+	close(pipe_end[1]);
+	waitpid(-1, NULL, 0);
+	waitpid(-1, NULL, 0);
 	return (0);
 }
