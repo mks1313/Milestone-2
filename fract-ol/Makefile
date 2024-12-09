@@ -6,7 +6,7 @@
 #    By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 17:51:21 by mmarinov          #+#    #+#              #
-#    Updated: 2024/12/09 18:54:34 by mmarinov         ###   ########.fr        #
+#    Updated: 2024/12/09 19:08:12 by mmarinov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ LIBFT_INC = I$(LIBFT_DIR)/includes
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -I$(MLX_DIR)
 
+# Libft 
 MLX_DIR = minilibx-linux
 MLX_LIB = $(MLX_DIR)/libmlx.a
 MLX_FLAGS = -L$(MLX_DIR) -lmlx -lX11 -lXext -lm
