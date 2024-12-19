@@ -6,7 +6,7 @@
 #    By: mmarinov <mmarinov@student.42barcelon      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/19 13:27:43 by mmarinov          #+#    #+#              #
-#    Updated: 2024/12/09 17:38:37 by mmarinov         ###   ########.fr        #
+#    Updated: 2024/12/19 15:11:28 by mmarinov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,14 +23,14 @@ OBJ_DIR = obj/
 # Archivos fuente organizados por carpetas
 SRCS =  \
 		src/num/ft_isalnum.c src/num/ft_atoi.c src/num/ft_isdigit.c \
-		src/num/ft_itoa.c src/num/ft_utoa.c \
+		src/num/ft_itoa.c src/num/ft_utoa.c src/num/ft_is_hex_digit.c \
 		src/char/ft_isalpha.c src/char/ft_isascii.c src/char/ft_isprint.c \
 		src/char/ft_tolower.c src/char/ft_toupper.c \
 		src/str/ft_strlen.c src/str/ft_strlcpy.c src/str/ft_strlcat.c \
 		src/str/ft_strchr.c src/str/ft_strrchr.c src/str/ft_strncmp.c \
 		src/str/ft_strnstr.c src/str/ft_strjoin.c src/str/ft_strtrim.c \
 		src/str/ft_strmapi.c src/str/ft_split.c src/str/ft_striteri.c \
-		src/str/ft_striteri.c \
+		src/str/ft_striteri.c src/str/ft_is_sp.c\
 		src/mem/ft_memset.c src/mem/ft_memcpy.c src/mem/ft_strdup.c \
 		src/mem/ft_memmove.c src/mem/ft_memchr.c src/mem/ft_memcmp.c \
     	src/mem/ft_calloc.c src/mem/ft_bzero.c src/mem/ft_substr.c \
