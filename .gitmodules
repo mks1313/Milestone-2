@@ -1,6 +1,0 @@
-[submodule "libft"]
-	path = libft
-	url = git@vogsphere.42barcelona.com:vogsphere/intra-uuid-5b27e1f9-a8ae-4b5e-abc2-0452aff01d27-6211048-mmarinov
-[submodule "minilibx-linux"]
-	path = minilibx-linux
-	url = git@github.com:42Paris/minilibx-linux.git
