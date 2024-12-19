@@ -6,7 +6,7 @@
 /*   By: mmarinov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 14:51:33 by mmarinov          #+#    #+#             */
-/*   Updated: 2024/12/19 15:53:07 by mmarinov         ###   ########.fr       */
+/*   Updated: 2024/12/19 18:15:22 by mmarinov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,3 @@ int	julia(t_fractol *f, double zr, double zi)
 	the same patterns we see at that point in the Mandelbrot fractal
 	will emerge in the Julia fractal.
 */
-
