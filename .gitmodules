@@ -1,3 +1,6 @@
 [submodule "lib"]
 	path = lib
 	url = git@vogsphere.42barcelona.com:vogsphere/intra-uuid-d3912f89-6d87-4962-b3ab-59093a243a8f-5735193-mmarinov
+[submodule "libft"]
+	path = libft
+	url = git@vogsphere.42barcelona.com:vogsphere/intra-uuid-5b27e1f9-a8ae-4b5e-abc2-0452aff01d27-6211048-mmarinov
