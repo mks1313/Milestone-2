@@ -6,7 +6,7 @@
 /*   By: mmarinov <mmarinov@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 13:11:11 by mmarinov          #+#    #+#             */
-/*   Updated: 2024/12/09 14:25:38 by mmarinov         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:10:53 by mmarinov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,11 @@ typedef struct s_list
 //Functions
 int		ft_isalnum(int c);
 int		ft_isalpha(int c);
+int		ft_is_sp(int c);
 void	ft_bzero(void *s, size_t n);
 int		ft_isascii(int c);
 int		ft_isdigit(int c);
+int		ft_is_hex_digit(int c);
 int		ft_isprint(int c);
 size_t	ft_strlen(const char *s);
 int		ft_tolower(int c);
